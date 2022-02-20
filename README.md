@@ -30,9 +30,32 @@ These plots help support our objective and gives cause to perform further data p
 
 Once the pre-processing was done, model building begins. For this competition, I was looking to predict a binary outcome of 0 or 1 for death and survival. I explored the three different models to make predictions. Each model was developed using the full dataset after pre-processing. I decided to use this approach to perform the preliminary evaluation and to help build a baseline to help explain our objective. 
 
-## Generalized Linear Model
+### Generalized Linear Model
 
-The first model, a simple generalized linear regression model, was built with the pre-processed Train data to assess the significance of predictors. This model had an AUC score of 0.884 and AIC score of 783.25 against the actual survival result. Next, this initial model was then used to predict the survival result in the revised Test data, and then results were submitted to Kaggle to assess the performance resulting in a score of 0.77033. Even though his model provided the highest AUC score, the prediction did not perform well. This could be due to overfitting of the data during training. Since the test set provided by Kaggle did not include the predictor variable, we could not use this to test our model. Because of this, the AUC score recorded was based on our training set.
+The first model, a simple generalized linear regression model, was built with the pre-processed Train data to assess the significance of predictors. This model had an AUC score of 0.884 and AIC score of 783.25 against the actual survival result. Next, this initial model was then used to predict the survival result in the revised Test data, and then results were submitted to Kaggle to assess the performance resulting in a score of 0.77033. Even though his model provided the highest AUC score, the prediction did not perform well. This could be due to overfitting of the data during training. Since the test set provided by Kaggle did not include the predictor variable, I could not use this to test our model. Because of this, the AUC score recorded was based on the training set.
 
 
+### Lasso Regression using Generalized Linear Model with Elastic Net Penalty
+
+To build the Lasso Regression, a model matrix was built using the pre-processed dataset. In the initial iteration, the training set was split into a 75/25 spilt to obtain an actual testing set. This helped truly to test the model before we conducted the validation. I also performed cross-validation to select the optimal lambda that is used in the model. Additionally, a confusion matrix was created with a threshold of 0.5. This model produced an accuracy of 79.37% and an AUC of 0.849 on the testing set that was created. When submitted to Kaggle, the score received was 0.76315 which was not an improvement over the simple GLM model. However, since our model performed slightly better on the testing set compared to the training (0.843 vs 0.849), I decided to remove the testing set we created and instead train our model on the entire training set and then validate against the true test set. Since I no longer had test set to use our model on, the training set provided an AUC of 0.875 and an accuracy of 81.48%. This improved the prediction score in Kaggle as well to 0.77990
+
+### Ridge Regression using Generalized Linear Model with Elastic Net Penalty
+
+The third model built was using the Ridge function. The approach was identical to Lasso where the first iteration dividing the train set into train and test provided us with an AUC of 0.759 and an accuracy of 81.43%. However, the final score in Kaggle was an improvement to 0.78468. When I ran the second iteration without a test set, I received an AUC of 0.873 and an accuracy of 81.03%. In the competition, our overall score for this prediction was 0.78229 which was not an improvement over the previous Ridge submission using a created test set.
+
+Since Ridge performed the best out of all three models, I decided to select it as our final optimal model. The model created by training, testing, and predicting provided us with an overall score of 2161 out of 50,261 submissions.
+
+## Model Interpretation
+
+Since ridge does not force any parameter to 0, all parameters that was created during pre-processing was included in this model. I can deduce that because Lasso shrinks certain parameters to 0, including all the parameters was more effective than the variable and feature selection performed by Lasso. I can also deduce that there were several collinear parameters. While Lasso only keeps one at a non-zero value, Ridge kept all the collinear parameters and assigned them similar coefficients. we can see that socio-economic characteristics did in fact contribute to whether a passenger survived or died. Being female, a 1st class passenger or being young positively contributed to surviving. In contrast, being male or a third-class passenger negatively impacted whether the passenger survived.
+
+![image](https://user-images.githubusercontent.com/80222038/154825761-5e96cf4e-8c4b-4288-8059-846aba315f14.png)
+
+## Recommendations
+
+As the preliminary study was completed, a few tasks were identified which could perform to improve our model further. In the GLM model I could expand on the feature selection to understand if certain parameters should be included over others. Additionally, to account for overfitting of the model I could break our dataset into a training and testing like I did for Lasso and Ridge before we make our predictions. I believe this could improve this prediction.
+
+In the Lasso and Ridge, I could create additional interaction variables in our model matrix beyond what we created during pre-processing to understand the impact on the overall prediction. While our data pre-processing was extensive, there are additional interaction variables that could be created, however this will require some trial and error to determine the optimal model to build.
+
+Furthermore, I used a threshold of 0.5 to build our confusion matrix for our predictions. There are ways to find the optimal threshold that should be used. By doing this we could assess the impact it has to the prediction.
 
